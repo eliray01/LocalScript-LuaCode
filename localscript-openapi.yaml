@@ -1,0 +1,46 @@
+openapi: 3.0.3
+info:
+  title: LocalScript API
+  description: 
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+
+paths:
+  /generate:
+    post:
+      summary: Сгенерировать код по тексту задачи
+      operationId: generate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [prompt]
+              properties:
+                prompt:
+                  type: string
+                  description: Текст задачи на естественном языке
+            example:
+              prompt: "Функция factorial(n) для n >= 0"
+      responses:
+        "200":
+          description: OK — одна или несколько пар ключ/значение на корне JSON
+          content:
+            application/json:
+              schema:
+                type: object
+                minProperties: 1
+                additionalProperties:
+                  type: string
+                description: >
+                  Один или несколько тегов (имена выходных переменных), каждое значение — JsonString lua{...}lua.
+                example:
+                  ID: "lua{return wf.vars.ID}lua"
+                  ENTITY_ID: "lua{return wf.vars.ENTITY_ID}lua"
+        "422":
+          description: Невалидный ответ модели / не прошла проверка формата
+        "503":
+          description: Ollama недоступна или нехватка памяти

@@ -1,0 +1,35 @@
+FROM ollama/ollama:latest
+
+# LowCode: install Lua 5.5 (`luac -p`) and Python runtime for CLI.
+ARG LUA_VERSION=5.5.0
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        python3 python3-pip python3-venv ca-certificates curl make gcc libc6-dev \
+    && curl -fsSL "https://www.lua.org/ftp/lua-${LUA_VERSION}.tar.gz" -o /tmp/lua.tgz \
+    && tar -C /tmp -xzf /tmp/lua.tgz \
+    && make -C "/tmp/lua-${LUA_VERSION}" posix \
+    && make -C "/tmp/lua-${LUA_VERSION}" install INSTALL_TOP=/usr/local \
+    && rm -rf "/tmp/lua-${LUA_VERSION}" /tmp/lua.tgz \
+    && apt-get purge -y --auto-remove gcc make curl libc6-dev \
+    && rm -rf /var/lib/apt/lists/* \
+    && ln -sf /usr/local/bin/luac /usr/local/bin/luac5.5
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN python3 -m venv /opt/venv \
+    && /opt/venv/bin/pip install --no-cache-dir --upgrade pip \
+    && /opt/venv/bin/pip install --no-cache-dir -r requirements.txt
+
+COPY app ./app
+COPY docker/allinone-entrypoint.sh /entrypoint-allinone.sh
+RUN chmod +x /entrypoint-allinone.sh
+
+ENV OLLAMA_BASE_URL=http://127.0.0.1:11434
+ENV OLLAMA_MODEL=qwen2.5-coder:7b
+ENV NUM_CTX=4096
+ENV NUM_PREDICT=256
+ENV PYTHONUNBUFFERED=1
+ENV PATH="/opt/venv/bin:${PATH}"
+
+ENTRYPOINT ["/bin/sh", "/entrypoint-allinone.sh"]

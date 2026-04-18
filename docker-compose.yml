@@ -1,0 +1,17 @@
+services:
+  allinone:
+    build:
+      context: .
+      dockerfile: Dockerfile.allinone
+    environment:
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen2.5-coder:7b}
+      NUM_CTX: ${NUM_CTX:-4096}
+      NUM_PREDICT: ${NUM_PREDICT:-256}
+      PYTHONUNBUFFERED: "1"
+    stdin_open: true
+    tty: true
+    volumes:
+      - ollama_data:/root/.ollama
+
+volumes:
+  ollama_data:
