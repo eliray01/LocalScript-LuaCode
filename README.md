@@ -108,4 +108,4 @@ docker compose run --rm allinone
 
 ## License
 
-MIT © Hackathon 2026
+MIT © MWS True Tech Hack 2026
