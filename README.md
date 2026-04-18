@@ -2,7 +2,7 @@
 
 > Local AI coding agent — one container, zero cloud. Runs on GPU or CPU with a single command.
 
-Built for **Hackathon 2026** · Python · Docker · Ollama · Qwen2.5-Coder · Make
+Built for **MWS True Tech Hack 2026** · Python · Docker · Ollama · Qwen2.5-Coder · Make
 
 ---
 
